@@ -1,5 +1,6 @@
 import React from 'react';
 
+// interface to pass needed fields for the input group
 interface InputGroupProps {
   type: string;
   labelText: string;

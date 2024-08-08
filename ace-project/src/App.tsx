@@ -1,11 +1,11 @@
 import React from 'react'
-import Form from './components/Form'
+import Login from './Login'
 import { useState } from 'react'
 
 const App = () => {
   
   return (
-    <Form></Form>
+    <Login></Login>
   )
 }
 

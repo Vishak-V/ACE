@@ -3,32 +3,35 @@ import InputGroup from './InputGroup';
 import Button from './Button';
 import { FormEvent } from 'react';
 
-const Form = () => {
-    // hook to keep track of the inputs
-    const [inputState, setInputState] = useState({
-        fname:'',
-        lname:'',
-        email:''
-    })
+// interface to pass in fields for the input group:
+interface InputField {
+    inputFieldName: string;
+    inputFieldValue: string;
+}
+interface FormProps {
+    inputFieldList: InputField[];
+}
+const Form = ({inputFieldList}: FormProps) => {
+    
+    const[inputState, setInputState] = useState(inputFieldList);
     // hook to keep track of the form state
     const [isDone, setIsDone] = useState(true);
 
     // update the inputState hook whenever the input element is changed
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const id = event.currentTarget.id; //get the id of the current input element
-        setInputState(prevState => ({
-            ...prevState, //keep the previous all input values
-            [id]: event.target.value //just update the value of the item with key = id
-          }));
+        const value = event.currentTarget.value; //get the value of the current input element
+        setInputState(prevState => 
+            // loop through the list of input fields
+            prevState.map((inputField) =>
+                // if the name of the field is equal to the current element's id, update the field value with the current element's value
+                // else, keep it the same
+                inputField.inputFieldName === id ? {...inputField, inputFieldValue: value} : inputField
+            )
+        );
       };
 
-    // Check if all required fields are filled out
-    useEffect(() => {
-        const { fname, lname, email } = inputState;
-        const isDone = fname.trim() !== '' && lname.trim() !== '' && email.trim() !== '';
-        setIsDone(isDone);
-        console.log('isDone:', isDone); // Log the value of isDone
-    }, [inputState]);
+
 
     
     // handle submission of the form
@@ -39,12 +42,36 @@ const Form = () => {
 
     return (
         <form onSubmit={(e) => handleSubmit(e)}>
-            <InputGroup id="fname" type="text" placeholder='Enter your First Name...' labelText='First Name:' required onChange={(e) => handleInputChange(e)} />
-            <InputGroup id="lname" type="text" placeholder='Enter your Last Name...' labelText='Last Name:' required onChange={(e) => handleInputChange(e)}/>
-            <InputGroup id="email" type="email" placeholder='Enter your UA Email...' labelText='UA Email:' required onChange={(e) => handleInputChange(e)}/>
+            
+            {inputState.map((inputField, index) => (
+                <InputGroup
+                    key={index}
+                    id={inputField.inputFieldName}
+                    type="text"
+                    placeholder={`Enter your ${inputField.inputFieldName}...`}
+                    labelText={inputField.inputFieldName}
+                    required
+                    onChange={handleInputChange}
+                />
+            ))}
             <Button id="SubmitBtn" color="primary" disabled={!isDone} type="submit">Submit</Button>
         </form>
     );
 };
 
 export default Form;
+
+    // Check if all required fields are filled out
+    // useEffect(() => {
+    //     const { fname, lname, email } = inputState;
+    //     const isDone = fname.trim() !== '' && lname.trim() !== '' && email.trim() !== '';
+    //     setIsDone(isDone);
+    //     console.log('isDone:', isDone); // Log the value of isDone
+    // }, [inputState]);
+
+        // hook to keep track of the inputs
+    // const [inputState, setInputState] = useState({
+    //     fname:'',
+    //     lname:'',
+    //     email:''
+    // })
